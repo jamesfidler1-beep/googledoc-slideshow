@@ -1,0 +1,244 @@
+.player {
+    width: stretch;
+    margin: 20px;
+    border: 1px solid #000;
+    background: #000;
+    border-radius: 25px;
+	border-spacing:0;
+	padding-bottom: 25px;
+}
+
+.player thead h2 {
+    background-image: url(Playing.gif);
+    background-repeat: no-repeat;
+    padding: 5px;
+    margin: 0;
+    margin-left: 10px;
+        background-position: -10px -7px;
+    background-size: 55px;
+}
+
+.player thead span {
+	color: #fff;
+    padding-left: 30px;
+}
+
+.player #track {
+	display:none;
+}
+
+.options {
+	text-align: right;
+}
+
+.player.playerpaused thead h2 {
+	background-image: url(NotPlaying.gif);
+}
+
+.player .art {
+	width: 120px;
+}
+
+.player .art p {
+	display: inline-block;
+}
+
+.player tbody {
+  background: #f00;
+}
+
+.player tbody.loaded {
+  background: #000;
+}
+
+.player tbody tr.playbar {
+  display:none;
+}
+
+.player tbody.loaded.selected tr.playbar {
+  display:table-row;
+}
+
+.trackprogress {
+	    color: #fff;
+    font-size: 15px;
+    display: inline;
+    vertical-align: 25px;
+}
+
+.trackvolume {
+    color: #fff;
+    font-size: 20px;
+    display: inline;
+    vertical-align: 21px;
+}
+
+.player td.file {
+	display:none;
+}
+
+.player input {
+    width: stretch;
+    margin: 12px;
+}
+
+.playerbutton {
+	display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+    background-image: url(playericons.png);
+    background-repeat: no-repeat;
+    background-size: 306px;
+    background-position: -242px -174px;
+}
+
+.paused .playerbutton.play {
+	display: inline-block;
+    background-position: -23px -129px;
+}
+
+.playerbutton.play {
+    background-position: -66px -129px;
+}
+
+.playerbutton.mute {
+    background-position: -199px -129px;
+}
+
+.playerbutton.tracknext {
+    background-position: -154px -173px;
+}
+
+.playerbutton.trackprev {
+    background-position: -111px -173px;
+}
+
+.playerbutton.trackstart {
+    background-position: -111px -128px;
+}
+
+.playerbutton.trackend {
+    background-position: -154px -128px;
+}
+
+.playerbutton.nexttrack.disabled {
+	pointer-events:none
+}
+
+.playerbutton.prevtrack.disabled {
+	pointer-events:none
+}
+
+.muted .playerbutton.mute {
+    background-position: -199px -173px;
+}
+
+.player .art span {
+	height: 60px;
+    width: 60px;
+    margin: 10px;
+    border: 4px solid #fff;
+    overflow: hidden;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+}
+	
+.player .art img {
+  height: 60px;
+  width: auto;
+}
+
+.player tbody.selected.loaded {
+	background: #525;
+}
+
+.player .playbar {
+	background: #525;
+}
+
+.player .selected .art span {
+	height: 120px;
+    width: 120px;
+}
+
+.player .selected .art .playerbutton {
+	display:none;
+}
+
+.player .art .playerbutton {
+	display:none;
+}
+
+.player tbody.loaded .art .playerbutton {
+	display: inline-block;
+}
+
+.player tbody.loaded.selected .art .playerbutton {
+	display:none;
+}
+
+.player .selected .art img {
+  height: 120px;
+  width: auto;
+}
+
+
+.player .title span {
+	color: #fff;
+	font-size: 26pt;
+	font-family: "Arial";
+}
+
+.trackcontrols {
+	text-align: right;	
+    width: 150px;
+}
+
+
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    input[type='range'] {
+        overflow: hidden;
+        -webkit-appearance: none;
+        background-color: #000000;
+        height: 40px;
+		box-shadow: 0 0 0 10px #525 inset;
+    }
+    
+    input[type='range']::-webkit-slider-runnable-track {
+      height: 40px;
+	  -webkit-appearance: none;
+      color: #13bba4;
+      margin-top: -1px;
+    }
+    
+    input[type='range']::-webkit-slider-thumb {
+      width: 94px;
+      -webkit-appearance: none;
+      height: 40px;
+	  overflow: visible;
+      cursor: ew-resize;
+      background: url(Slider.png);
+	  border-radius: 4px;
+      box-shadow: -800px 0 0 800px rgba(100,100,100, 0.5);
+    }
+
+}
+/** FF*/
+input[type="range"]::-moz-range-progress {
+  background-color: #43e5f7; 
+}
+input[type="range"]::-moz-range-track {  
+  background-color: #9a905d;
+}
+/* IE*/
+input[type="range"]::-ms-fill-lower {
+  background-color: #43e5f7; 
+}
+input[type="range"]::-ms-fill-upper {  
+  background-color: #9a905d;
+}
+	

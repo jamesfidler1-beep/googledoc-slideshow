@@ -1,1 +1,45 @@
-<html/>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Pearl - Slideshow</title>
+    <script src="jquery-3.7.1.min.js"></script>
+	<script src="jquery-ui1.14.2.min.js"></script>
+	<script src="slideshow.js"></script>
+	<script src="player.js"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" type="text/css" href="slideshow.css">
+	<link rel="stylesheet" type="text/css" href="player.css">
+</head>
+<body>
+    <iframe class="content" width="300" height="200" src="index.html"></iframe>
+	<div class="topbar">
+		<div class="page">0</div>
+		<div class="start"></div>
+		<select class="style" id="style" onchange="setStyle();">
+			<option value="simple">Simple</option>
+			<option value="fancy">Fancy</option>
+			<option value="pink">Pink</option>
+			<option value="blue">Blue</option>
+		</select>
+		<div class="clock"><span class="clockprefix"></span><span class="clockvalue"></span><span class="clocksuffix"></span></div>
+		<div class="sinfo"></div>
+	</div>
+	<div class="slide" id="slide0"><div class="scont">Getting Content...</div></div>
+	<div class="nav"><button class="button prev" onclick="nextSlidePlease(-1)"/><button class="lock locked" onclick="toggleLock()"/><button class="button next" onclick="nextSlidePlease(1)"/></div>
+
+  <script>
+	$(document).ready(function() {
+		$('.content').on("load", function() {
+			initialiseSlideShow()
+		});
+	});
+	
+	
+	
+     
+  </script>
+
+</body>
+</html>

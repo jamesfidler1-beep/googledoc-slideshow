@@ -1,0 +1,186 @@
+
+		body { font-family: sans-serif; min-height: 100vh;margin: 0; padding:0;-webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;}
+		
+		html,body {
+			height:100%;
+			margin:0;
+			overflow: hidden;
+		}
+		
+		body.slides .style {
+			display: none;
+		}
+		
+        #output { max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; }
+		.content {display:none}
+		
+		.slide::before {
+		  content: '';
+		  display: inline-block;
+		  height: 100%;
+		  vertical-align: middle;
+		  margin-right: -0.25em; /* Adjusts for spacing */
+		}
+		
+		.scont {
+			display: inline-block;
+			vertical-align: middle;
+			width: 90%;
+		}
+		
+		.nav {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			height: 100px;
+			text-align: center;
+		}
+		
+		.button {
+			font-size: 40px;
+			background: #000;
+			color: #fff;
+			padding: 10px 20px;
+			border-radius: 10px;
+			border: 0;
+		}
+		
+		.topbar {
+			position: absolute;
+			width: 100%;
+			z-index: 1000;
+		}
+		
+		.topbar div {
+			display: inline-block;
+		}
+		
+		.clock {
+			float: right;
+		}
+		
+		.clock.behind {
+			color: #F00;
+		}
+		
+		.clock.ahead {
+			color: #0F0;
+		}
+		
+		.clocksuffix.active.dc1:before {
+			content: "▶";
+		}
+		
+		.clocksuffix.active.dc2:before {
+			content: "▶▶";
+		}
+		
+		.clocksuffix.active.dc3:before {
+			content: "▶▶▶";
+		}
+		
+		.clocksuffix.active.dcn:before {
+			content: "▶▶▶ ";
+		}
+		
+		.clockprefix.active.dc1:after {
+			content: "◄";
+		}
+		
+		.clockprefix.active.dc2:after {
+			content: "◄◄";
+		}
+		
+		.clockprefix.active.dc3:after {
+			content: "◄◄◄";
+		}
+		
+		.clockprefix.active.dcn:after {
+			content: " ◄◄◄";
+		}
+		
+		.topbar div.start {
+			display:none;
+		}
+		
+		.topbar div.sinfo {
+			display:none;
+		}
+		
+		button:disabled {
+			display:none;
+		}
+		
+		video {
+			width: 100%;
+		}
+		
+		.slide {position: absolute;top:0;height:100%;width: 100%;text-align: center;}
+		* {
+			-webkit-font-smoothing: antialiased;
+		}
+		.c1 {
+		  font-family: "Momo Trust Display", sans-serif;
+		  font-weight: 400;
+		  font-style: normal;
+		  font-smooth: 2em;
+		}
+		.prev:before {content: 'Back';}
+		.next:before {content: 'Next';}
+		.lock.locked:before {content: 'Locked';}
+		.lock.unlocked:before {content: 'Unlocked';}
+		
+		/* Transitions */
+		
+		.slideh0 {
+			margin-left: 0
+		}
+		
+		.slideh1 {
+			margin-left: 100%
+		}
+		
+		.slideh-1 {
+			margin-left: -100%
+		}
+		
+		.fade0 {
+			opacity: 1;
+		}
+		
+		.fade1,.fade-1 {
+			opacity: 0;
+		}	
+		
+		/* Fancy Style */
+		
+		body.fancy .slide {
+			background: #FDD;
+			background-image:    url(colourfulbg.jpg);
+			background-size:     cover;                
+			background-repeat:   no-repeat;
+			background-position: center center; 
+		}
+		
+		body.fancy .slide .title span {
+			font-family: "Dancing Script";
+		}
+		
+		body.fancy .slide .subtitle span {
+			font-family: "Dancing Script";
+		}
+		
+		body.fancy .slide h1 span {
+			font-family: "Dancing Script";
+		}
+		
+		body.fancy .slide h2 span {
+			font-family: "Dancing Script";
+		}
+		
+		body.fancy .slide h3 span {
+			font-family: "Dancing Script";
+		}
+		
+		
