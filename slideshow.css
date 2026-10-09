@@ -196,5 +196,13 @@
 			color: whitesmoke;
 		}
 		
+		body.grad .slide ul li {
+			color: whitesmoke;
+		}
+
+		body.grad .slide ol li {
+		  color: whitesmoke;
+		  font-weight: bold;
+		}
 		
 		
