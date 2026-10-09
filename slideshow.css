@@ -182,5 +182,15 @@
 		body.fancy .slide h3 span {
 			font-family: "Dancing Script";
 		}
+				
+		/* Grad Style */
+		
+		body.grad .slide {
+			background-image:    url(purplegrad.svg);
+			background-size:     cover;                
+			background-repeat:   no-repeat;
+			background-position: center center; 
+		}
+		
 		
 		
