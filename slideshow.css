@@ -191,6 +191,10 @@
 			background-repeat:   no-repeat;
 			background-position: center center; 
 		}
+
+		body.grad .slide {
+			color: whitesmoke;
+		}
 		
 		
 		
