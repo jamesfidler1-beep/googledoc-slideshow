@@ -126,8 +126,8 @@
 	  console.log("Current page end= "+new Date(pageend))	
 	  
 	  nn = new Date()
-	  var hour = nn.toLocaleTimeString([], {hour: '2-digit'});
-	  var minute = nn.toLocaleTimeString([], {minute: '2-digit'});
+	  var hour = nn.toLocaleTimeString("en-GB", {hour: '2-digit'});
+	  var minute = nn.toLocaleTimeString("en-GB", {hour: '2-digit',minute: '2-digit'}).substring(3);
 	  $(".clock .clockvalue").html(hour+"<span class='flash-hard'>:</span>"+minute);
 	  
 	  if (!(isNaN(pagestart) || isNaN(pagestart))) {
@@ -138,6 +138,7 @@
 		  console.log("nn= "+nn)
 		  console.log("startDiff= "+ startDiff);
 		  console.log("endDiff= "+ endDiff);
+		  $(".tag_this_left").text(-endDiff)
 		  if (endDiff>=0) {
 			if (endDiff<=3) {
 			  dc = "dc"+endDiff
@@ -200,6 +201,10 @@
 		
 		$(".slide0 .scont").html($(".content").contents().find("html").find('.doc-content > table:eq('+$(".page").text()+') > tbody > tr:eq(1) > td:eq('+type+')').html())
 		
+		$(".slide0 .scont").html(function(index, oldHtml) {
+			return oldHtml.replace(/&lt;!([^\>]*)&gt;/g, "<span class='tag tag_$1'>#ERR#</span>");
+		});
+		
 		if (type=="0") {
 			console.log("transition "+tt+d)
 			$(".slide0").switchClass(tt+d,tt+"0",1000)
@@ -228,8 +233,19 @@
 				$(".slide0 .scont").append(createVideoControls($(this).text()))
 			});		
 		}
+		populateTags()
 		displayClock()
 	};
+	
+	function populateTags() {
+		page = parseInt($(".page").text())
+	    pagestart = new Date($(".sinfo #"+page+" > .start").text())
+	    pageend = new Date($(".sinfo #"+page+" > .end").text())
+		pes = pageend.toLocaleTimeString("en-GB")
+		$(".tag_next_start").text(pes)
+		$(".tag_this_len").text($(".sinfo #"+page).contents().not($(".sinfo #"+page).children()).text().trim())
+	}
+	
 	
 	function resize() {
 		 $(".slide0 .scont").css('scale', "1")
@@ -278,6 +294,3 @@
 	function setStyle() {
 		styleChannel.postMessage($(".style").val());
 	}
-	
-	
-	
