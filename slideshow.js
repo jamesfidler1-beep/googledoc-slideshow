@@ -89,7 +89,7 @@
 	}
 	
 	function nextSlidePlease(d) {
-	  if ((parseInt($(".page").text())+d>=0) && (parseInt($(".page").text())+d<=$(".content").contents().find("html").find('.doc-content > table').length-1) && (!$('#slide0').is(':animated'))) {
+	  if ((parseInt($(".page").text())+d>=0) && (parseInt($(".page").text())+d<=$(".content").contents().find("html").find('.doc-content > table').length-1) && ($('.slide1').length==0)) {
 		$(".page").text(parseInt($(".page").text())+d)
 		loadSlide(d)
 	  }
@@ -185,40 +185,92 @@
 	    if (window.name=="Notes") {
 		  type = "1"
 		} else {
-		  type = "0"
+		    type = "0"
 		    tt = "fade"
-			x = $("#slide0").clone()
-			x.prop('id', 'slide1' )
+			x = $(".slide0").clone()
+			x.addClass('slide1')
+			x.removeClass('slide0')
 			x.appendTo("body")
-			$("#slide0").addClass(tt+d)   
-			$("#slide0 .scont").html("")
-			$("#slide0").switchClass(tt+d,tt+"0",1000)
-			$("#slide1").switchClass(tt+"0",tt+(-d),1000,function() {$("#slide1").remove()})
+			$(".slide0").addClass(tt+d)   
+			$(".slide0 .scont").html("")
 		}
 		
-		$("#slide0 .scont").html($(".content").contents().find("html").find('.doc-content > table:eq('+$(".page").text()+') > tbody > tr:eq(1) > td:eq('+type+')').html())
-		$("#slide0 .prev").prop("disabled",parseInt($(".page").text())==0)
-		$("#slide0 .next").prop("disabled",parseInt($(".page").text())>$(".content").contents().find("html").find('.doc-content > table').length-2)
+		$(".slide0 .scont").html($(".content").contents().find("html").find('.doc-content > table:eq('+$(".page").text()+') > tbody > tr:eq(1) > td:eq('+type+')').html())
+		
+		if (type=="0") {
+			console.log("transition "+tt+d)
+			$(".slide0").switchClass(tt+d,tt+"0",1000)
+			$(".slide1").switchClass(tt+"0",tt+(-d),1000,function() {$(".slide1").remove()})
+		}
+		
+		
+		$(".slide0 .prev").prop("disabled",parseInt($(".page").text())==0)
+		$(".slide0 .next").prop("disabled",parseInt($(".page").text())>$(".content").contents().find("html").find('.doc-content > table').length-2)
 		if (isLocked()) {
 			pageChannel.postMessage($(".page").text());
 		}
-		$("#slide0 .scont").find("thead span:textEquals(PLAYER)").each(function( index ) {
+		$(".slide0 .scont").find("thead span:textEquals(PLAYER)").each(function( index ) {
 			t = $( this ).parents('table:eq(0)')
 			$(t).replaceWith(createPlayer(t,index));
 		});
 		if (type=="0") {
-			$("#slide0 .scont").find("a").each(function( index ) {
+			$(".slide0 .scont").find("a").each(function( index ) {
 				x = $(this).text()
 				$(this).replaceWith(`<video autoplay ><source src='${x}' type='video/mp4'></video>`);
 				videoLoadCheck()
 			});
+			resize()
 		} else {
 			$(".content").contents().find("html").find('.doc-content > table:eq('+$(".page").text()+') > tbody > tr:eq(1) > td:eq(0) a').each(function( index ) {
-				$("#slide0 .scont").append(createVideoControls($(this).text()))
+				$(".slide0 .scont").append(createVideoControls($(this).text()))
 			});		
 		}
 		displayClock()
 	};
+	
+	function resize() {
+		 $(".slide0 .scont").css('scale', "1")
+		 $(".slide0 .scont").css('width', "90%")
+		 sh = $(".slide0")[0].getBoundingClientRect().height-200
+		 sw = $(".slide0")[0].getBoundingClientRect().width*0.9
+		 sch = $(".slide0 .scont")[0].getBoundingClientRect().height
+		 scw = $(".slide0 .scont")[0].getBoundingClientRect().width
+		 sc = sh/sch
+		 console.log("Pre Slide Height = "+sh)
+		 scaler(1,sc,scw,0)
+	}
+	
+	function scaler(start,max,width,x) {
+		if (x>20) {
+			return
+		} 
+		scaleup = start<max
+		if (!scaleup) {
+			$(".slide0 .scont").css("position","absolute")
+			$(".slide0 .scont").css("top","100px")
+			$(".slide0 .scont").css("left","50px")
+			$(".slide0 .scont").css("transform-origin","top left");
+		}
+		$(".slide0 .scont").css('scale', max.toString())
+		$(".slide0 .scont").css('width', width*(1/max).toString()+"px")
+		sh = $(".slide0")[0].getBoundingClientRect().height-200
+		sch = $(".slide0 .scont")[0].getBoundingClientRect().height
+		if ((scaleup && sch>sh) || (!scaleup && sch<sh)) {
+			console.log("Oversize = "+sh+" "+sch+" "+x)
+			mid = (start+max)/2
+			$(".slide0 .scont").css('scale', mid.toString())
+			$(".slide0 .scont").css('width', width*(1/mid).toString()+"px")
+		    sh = $(".slide0")[0].getBoundingClientRect().height-200
+		    sch = $(".slide0 .scont")[0].getBoundingClientRect().height
+		    if ((scaleup && sch>sh) || (!scaleup && sch<sh)) {
+				scaler(start,mid,width,x+1)
+			} else {
+				scaler(mid,max,width,x+1)
+			}				
+		} else {
+			return
+		}
+	}
 	
 	function setStyle() {
 		styleChannel.postMessage($(".style").val());
