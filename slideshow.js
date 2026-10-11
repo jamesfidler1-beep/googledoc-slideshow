@@ -126,8 +126,9 @@
 	  console.log("Current page end= "+new Date(pageend))	
 	  
 	  nn = new Date()
-	  var display = nn.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-	  $(".clock .clockvalue").text(display);
+	  var hour = nn.toLocaleTimeString([], {hour: '2-digit'});
+	  var minute = nn.toLocaleTimeString([], {minute: '2-digit'});
+	  $(".clock .clockvalue").html(hour+"<span class='flash-hard'>:</span>"+minute);
 	  
 	  if (!(isNaN(pagestart) || isNaN(pagestart))) {
 		  
@@ -147,6 +148,8 @@
 			}
 			$(".clock").removeClass("ahead")
 			$(".clock").addClass("behind")
+			$(".clock").removeClass("dc1 dc2 dc3 dcn")	
+			$(".clock").addClass(dc)
 			$(".clock .clocksuffix").text(ed);
 			$(".clock .clocksuffix").removeClass("dc1 dc2 dc3 dcn")
 			$(".clock .clocksuffix").addClass("active "+dc)

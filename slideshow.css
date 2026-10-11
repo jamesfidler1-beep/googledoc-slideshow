@@ -61,7 +61,20 @@
 		}
 		
 		.clock {
-			float: right;
+			position: absolute;
+			right: 0;
+			top: 0;
+			background: #000;
+			padding: 6px 12px;
+			border: solid 2px #fff;
+			border-radius: 10px;
+			font-weight: bold;
+			color: whitesmoke;
+		}
+		
+		.clockvalue {
+			font-size: 24px;
+			padding: 0 10px;
 		}
 		
 		.clock.behind {
@@ -88,6 +101,10 @@
 			content: "▶▶▶ ";
 		}
 		
+		.clocksuffix.active.dcn:after {
+			content: " min";
+		}
+		
 		.clockprefix.active.dc1:after {
 			content: "◄";
 		}
@@ -101,7 +118,7 @@
 		}
 		
 		.clockprefix.active.dcn:after {
-			content: " ◄◄◄";
+			content: "min ◄◄◄";
 		}
 		
 		.topbar div.start {
@@ -207,5 +224,54 @@
 		body.grad .slide ol li {
 		  color: whitesmoke;
 		  font-weight: bold;
+		}
+		
+		.flash-hard {
+			/* Animation name, duration, timing function, and repeat count */
+			animation: flash-abrupt 2s step-end infinite;
+		}
+
+		@keyframes flash-abrupt {
+			50% {
+					opacity: 0; /* Hides the text halfway through the cycle */
+				}
+		}
+		
+		.clock.behind {
+			/* Animation name, duration, timing function, and repeat count */
+			animation: smallpulse 2s ease-in-out infinite;
+			transform-origin: top right;
+		}
+
+		@keyframes smallpulse {
+			0% {
+			
+			transform: scale(1); /* Original size */
+		  }
+		  50% {
+			transform: scale(1.05); /* Grows 15% larger halfway through */
+		  }
+		  100% {
+			transform: scale(1); /* Shrinks back down to original size */
+		  }
+		}
+		
+		.clock.behind.dcn {
+			/* Animation name, duration, timing function, and repeat count */
+			animation: bigpulse 2s ease-in-out infinite;
+			transform-origin: top right;
+		}
+
+		@keyframes bigpulse {
+			0% {
+			
+			transform: scale(1); /* Original size */
+		  }
+		  50% {
+			transform: scale(1.2); /* Grows 15% larger halfway through */
+		  }
+		  100% {
+			transform: scale(1); /* Shrinks back down to original size */
+		  }
 		}
 		
