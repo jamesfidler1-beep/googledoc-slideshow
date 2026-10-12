@@ -1,5 +1,6 @@
     const pageChannel = new BroadcastChannel('page');
 	const vidChannel = new BroadcastChannel('vid');
+	const audioChannel = new BroadcastChannel('audio');
 	const styleChannel = new BroadcastChannel('style');
 	
 	function initialiseSlideShow() {
@@ -22,6 +23,10 @@
 		
 		vidChannel.onmessage = function(e) {
 			videoEvent(e.data)
+		};
+		
+		audioChannel.onmessage = function(e) {
+			audioEvent(e.data)
 		};
 		
 		styleChannel.onmessage = function(e) {
@@ -56,6 +61,13 @@
 			 // PageDown was pressed
 			 console.log("pagedown")
 			 nextSlidePlease(1)
+		 } else if(event.code === 'KeyB') {
+			 // pause was pressed
+			 console.log("pause")
+			 videoPlayPause()
+			 playerVideoPlayPause()
+			 audioPlayPause()
+			 playerAudioPlayPause()
 		 }
 		});
 		
@@ -69,6 +81,10 @@
 	
 	function videoEvent(e) {
 		playerVideoEvent(e)
+	}
+	
+	function audioEvent(e) {
+		playerAudioEvent(e)
 	}
 	
 	function getSlideInfo() {

@@ -57,9 +57,9 @@
         $(this).remove(); 
     });
 	$(node).find("tbody tr").each(function( track ) {
-			let controlshtml = "<tr class='"+PLAYER_PLAYBAR+" "+TRACK_POSITION_CONTROL+"'><td><div class='"+BUTTON+" "+BUTTON_PLAY+"' onclick='playPause("+index+","+track+")'></div><span class='"+TRACK_POSITION_DISPLAY+"'></span></td><td colspan=4><div><input type='range' min='0' max='1000' value='0' onmousedown='progressMouseDown("+index+","+track+")' onmouseup='progressMouseUp("+index+","+track+")' onmousemove='progressMouseMove("+index+","+track+")'></div></td></tr>"+
+			let controlshtml = "<tr class='"+PLAYER_PLAYBAR+" "+TRACK_POSITION_CONTROL+"'><td><div class='"+BUTTON+" "+BUTTON_PLAY+"' id='i_"+index+"_"+track+"' onclick='playPause("+index+","+track+")'></div><span class='"+TRACK_POSITION_DISPLAY+"'></span></td><td colspan=4><div><input type='range' min='0' max='1000' value='0' onmousedown='progressMouseDown("+index+","+track+")' onmouseup='progressMouseUp("+index+","+track+")' onmousemove='progressMouseMove("+index+","+track+")'></div></td></tr>"+
 	           "<tr class='"+PLAYER_PLAYBAR+" "+TRACK_VOLUME_CONTROL+"'><td><div class='"+BUTTON+" "+BUTTON_MUTE+"' onclick='mute("+index+","+track+")'></div><span class='"+TRACK_VOLUME+"'></span></td><td colspan=4><div><input type='range' min='0' max='1000' value='500'  onmousedown='volumeMouseDown("+index+","+track+")' onmouseup='volumeMouseUp("+index+","+track+")' onmousemove='volumeMouseMove("+index+","+track+")'></div></td></tr>"
-			let trackhtml = "<tbody><tr><td class='"+TRACK_ART+"'>"+$(this).find("td:eq(0)").html()+"<div class='"+BUTTON+" "+BUTTON_PLAY+"' onclick='playPause("+index+","+track+")'></td><td colspan=4 class='"+TRACK_TITLE+"'>"+$(this).find("td:eq(1)").html()+"</td><td class='"+TRACK_FILE+"'><audio src=\""+$(this).find("td:eq(2) span").text()+"\" onloadeddata='audioLoaded("+index+","+track+")'/></td></tr>"+controlshtml+"</tbody>"
+			let trackhtml = "<tbody><tr><td class='"+TRACK_ART+"'>"+$(this).find("td:eq(0)").html()+"<div class='"+BUTTON+" "+BUTTON_PLAY+"' id='i_"+index+"_"+track+"' onclick='playPause("+index+","+track+")'></td><td colspan=4 class='"+TRACK_TITLE+"'>"+$(this).find("td:eq(1)").html()+"</td><td class='"+TRACK_FILE+"'><audio src=\""+$(this).find("td:eq(2) span").text()+"\" onloadeddata='audioLoaded("+index+","+track+")'/></td></tr>"+controlshtml+"</tbody>"
 			$(node).append($(trackhtml));
 	});
 	$(node).find("tbody:eq(0)").remove();
@@ -116,13 +116,25 @@
 	   return $("table."+PLAYER+":eq("+index+")")
    }
    
-   function getOptions(index) {
+	function getOptions(index) {
 		return getPlayerRow(index).find("."+PLAYER_OPTIONS).text()
-   }
+	}
    
-   function getAudio(index,track) {
+	function getAudio(index,track) {
 	   return getPlayerTrack(index,track).find("audio:eq(0)")[0]
-   }
+	}
+   
+	function playerAudioPlayPause() {
+		audioChannel.postMessage("AP");
+	}
+   
+	function audioPlayPause() {
+		$(".player .selected .play:eq(0)").each(function( index ) {
+			 e = $(this).attr('id')
+			 f = e.split("_")
+			playPause(f[1],f[2])
+		})
+	}
    
    function playPause(index,track) {
       let a = getAudio(index,track)
@@ -281,6 +293,13 @@
 	   return track
    }
    
+	function playerAudioEvent(e) {
+		console.log("Audio Event "+e)
+		if (e.startsWith("AP")) {
+			audioPlayPause()
+		}
+	}
+   
    // ####################################### VIDEO ##############################################
    
    
@@ -325,6 +344,17 @@
 			vidChannel.postMessage("VL:"+this.currentTime+":"+this.duration+":"+pau);
 		})
    }
+   
+   function playerVideoPlayPause() {
+		$("video").each(function( index ) {
+			if (this.paused) {
+				this.play()
+				videoPlaying()
+			} else {
+				this.pause()	
+			}
+		})
+   }
   
   function playerVideoEvent(e) {
 	console.log("Video Event "+e)
@@ -333,14 +363,7 @@
 		p = e.split(":")
 		updateVideoControls(parseFloat(p[1]),parseFloat(p[2]),p[3])
 	} else if (e=="VP") {
-		$("video").each(function( index ) {
-			if (this.paused) {
-				this.play()
-				videoPlaying()
-			} else {
-				this.pause()	
-			}
-		})	
+		playerVideoPlayPause()
 	} else if (e=="VS") {
 		videoStopping()
 	} else if (e.startsWith("VSK")) {
