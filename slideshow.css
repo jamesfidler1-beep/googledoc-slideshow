@@ -19,6 +19,14 @@
 			background:whitesmoke;
 		}
 		
+		.slides .page {
+			display:none;
+		}
+		
+		.page::before {
+		  content:'Slide ';
+		}
+		
 		.slide::before {
 		  content: '';
 		  display: inline-block;

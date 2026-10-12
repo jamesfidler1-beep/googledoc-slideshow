@@ -5,15 +5,24 @@
 	
 	function initialiseSlideShow() {
 		
+		$(".page").text(getCookie("page"));
+		
 		fetch("config.txt",{cache: "no-store"})
         .then((res) => res.text())
         .then((text) => {
-			$(".start").text($.trim(text))
-			getSlideInfo()
+			$(".topbar .start").text($.trim(text))
+			try {
+				getSlideInfo()
+			} catch (exceptionVar) {
+			}
+			initialiseSlideShow2()
         })
         .catch((e) => console.error(e));
 		
+	}
 	
+	function initialiseSlideShow2() {
+		
 		pageChannel.onmessage = function(e) {
 			if ($(".page").text() != e.data && isLocked()) {
 				$(".page").text(e.data)
@@ -35,6 +44,7 @@
 		
 		window.onload = displayClock();
 		setTimeout(updateClock, 10000); 
+		displayClock()
 		
 		if (window.name!="Notes") {
 			document.title = "The Pearl - Slideshow"
@@ -70,12 +80,10 @@
 			 playerAudioPlayPause()
 		 }
 		});
-		
-		
-		
-		loadSlide(1)
-		console.log("Css = "+$(".content").contents().find("html").find("#contents style").html())
-		$('head').append($(".content").contents().find("html").find("#contents style"))
+		console.log("Css = "+$(".content").contents().find("html").find("#contents style").html());
+		$('head').append($(".content").contents().find("html").find("#contents style"));		
+		loadSlide(1);	
+
 	
 	};
 	
@@ -249,6 +257,7 @@
 				$(".slide0 .scont").append(createVideoControls($(this).text()))
 			});		
 		}
+		setCookie("page",$(".page").text(),7)
 		populateTags()
 		displayClock()
 	};
@@ -271,7 +280,7 @@
 		 sch = $(".slide0 .scont")[0].getBoundingClientRect().height
 		 scw = $(".slide0 .scont")[0].getBoundingClientRect().width
 		 sc = sh/sch
-		 console.log("Pre Slide Height = "+sh)
+		 console.log("Resize info "+sh+" "+sw+" "+sch+" "+scw+" "+sc)
 		 scaler(1,sc,scw,0)
 	}
 	
@@ -309,4 +318,27 @@
 	
 	function setStyle() {
 		styleChannel.postMessage($(".style").val());
+	}
+
+	function setCookie(cname, cvalue, exdays) {
+	  const d = new Date();
+	  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	  let expires = "expires="+ d.toUTCString();
+	  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
+	
+	function getCookie(cname) {
+		  let name = cname + "=";
+		  let decodedCookie = decodeURIComponent(document.cookie);
+		  let ca = decodedCookie.split(';');
+		  for(let i = 0; i <ca.length; i++) {
+			let c = ca[i];
+			while (c.charAt(0) == ' ') {
+			  c = c.substring(1);
+			}
+			if (c.indexOf(name) == 0) {
+			  return c.substring(name.length, c.length);
+			}
+		  }
+		  return "";
 	}
