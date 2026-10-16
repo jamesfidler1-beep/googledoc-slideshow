@@ -26,9 +26,9 @@
   const TRACK_FILE = "file"
   const TRACK_ART = "art"
   
-  const OPTION_AUTOPLAY = "A"
-  const OPTION_CONTINUE = "C"
-  const OPTION_LOOP = "L"
+  const OPTION_AUTOPLAY = "AUTOPLAY ✓"
+  const OPTION_CONTINUE = "CONTINUE ✓"
+  const OPTION_LOOP = "LOOP ✓"
   
   const BUTTON = "playerbutton"
   const BUTTON_PLAY = "play"
@@ -117,7 +117,9 @@
    }
    
 	function getOptions(index) {
-		return getPlayerRow(index).find("."+PLAYER_OPTIONS).text()
+		o = getPlayerRow(index).find("."+PLAYER_OPTIONS).text();
+		console.log("Options "+o);
+		return o;
 	}
    
 	function getAudio(index,track) {

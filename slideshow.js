@@ -241,7 +241,8 @@
 		if (isLocked()) {
 			pageChannel.postMessage($(".page").text());
 		}
-		$(".slide0 .scont").find("thead span:textEquals(PLAYER)").each(function( index ) {
+		$(".slide0 .scont").find("thead span:textEquals('Widget - Music Player')").each(function( index ) {
+			$(this).text("PLAYER")
 			t = $( this ).parents('table:eq(0)')
 			$(t).replaceWith(createPlayer(t,index));
 		});
