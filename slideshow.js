@@ -109,8 +109,14 @@
 		  p = p + ( l*60*1000)
 		  pp = new Date(p)
 		  $(this).append("<span class='end'>"+pp.toISOString().split('T')[0]+"T"+pp.toLocaleTimeString()+"</span>");
+		  $(this).append("<span class='slideOptions'>"+$(".content").contents().find("html .doc-content > table:eq("+index+") > tbody > tr:eq(0) > td:eq(1)").html()+"</span>");
       });
 	}
+	
+	function getSlideOption(page,optionName) {
+		return $(".sinfo > span:eq("+page+") > span.slideOptions span:contains('"+optionName+" ')").text().replace(new RegExp('^' + optionName+' *'),  '');
+	}
+	
 	
 	function nextSlidePlease(d) {
 	  if ((parseInt($(".page").text())+d>=0) && (parseInt($(".page").text())+d<=$(".content").contents().find("html").find('.doc-content > table').length-1) && ($('.slide1').length==0)) {
@@ -164,6 +170,11 @@
 		  console.log("endDiff= "+ endDiff);
 		  $(".tag_this_left").text(-endDiff)
 		  if (endDiff>=0) {
+			  
+			if (getSlideOption(page,"Advance") == "Auto") {
+				nextSlidePlease(1)
+			}				
+			 			  
 			if (endDiff<=3) {
 			  dc = "dc"+endDiff
 			  ed = ""
