@@ -224,10 +224,8 @@
 	    if (window.name=="Notes") {
 		  type = "1"
 		} else {
-			
-			
 		    type = "0"
-		    tt = "fade"
+		    tt = getSlideOption(page,"Transition").toLowerCase();
 			x = $(".slide0").clone()
 			x.addClass('slide1')
 			x.removeClass('slide0')
