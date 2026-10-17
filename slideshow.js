@@ -230,12 +230,13 @@
 			x.addClass('slide1')
 			x.removeClass('slide0')
 			x.appendTo("body")
-			$(".slide0").addClass(tt+d)   
-			$(".slide0 .scont").html("")
+			$(".slide0").removeClass().addClass("slide slide0")
 			if (getSlideOption(page,"Theme") != "") {
 				console.log("Slide theme "+getSlideOption(page,"Theme"));
-				$(".slide0").removeClass().addClass("slide slide0").addClass(getSlideOption(page,"Theme").toLowerCase());
+				$(".slide0").addClass(getSlideOption(page,"Theme").toLowerCase());
 			}
+			$(".slide0").addClass(tt+d)   
+			$(".slide0 .scont").html("")
 		}
 		
 		$(".slide0 .scont").html($(".content").contents().find("html").find('.doc-content > table:eq('+page+') > tbody > tr:eq(1) > td:eq('+type+')').html())
