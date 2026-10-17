@@ -184,7 +184,7 @@
 		
 		/* Fancy Style */
 		
-		body.fancy .slide {
+		.slide.fancy {
 			background: #FDD;
 			background-image:    url(colourfulbg.jpg);
 			background-size:     cover;                
@@ -192,44 +192,44 @@
 			background-position: center center; 
 		}
 		
-		body.fancy .slide .title span {
+		.slide.fancy .title span {
 			font-family: "Dancing Script";
 		}
 		
-		body.fancy .slide .subtitle span {
+		.slide.fancy .subtitle span {
 			font-family: "Dancing Script";
 		}
 		
-		body.fancy .slide h1 span {
+		.slide.fancy h1 span {
 			font-family: "Dancing Script";
 		}
 		
-		body.fancy .slide h2 span {
+		.slide.fancy h2 span {
 			font-family: "Dancing Script";
 		}
 		
-		body.fancy .slide h3 span {
+		.slide.fancy h3 span {
 			font-family: "Dancing Script";
 		}
 				
 		/* Grad Style */
 		
-		body.grad .slide {
+		.slide.grad {
 			background-image:    url(purplegrad.svg);
 			background-size:     cover;                
 			background-repeat:   no-repeat;
 			background-position: center center; 
 		}
 
-		body.grad .slide span {
+		.slide.grad span {
 			color: whitesmoke;
 		}
 		
-		body.grad .slide ul li {
+		.slide.grad ul li {
 			color: whitesmoke;
 		}
 
-		body.grad .slide ol li {
+		.slide.grad ol li {
 		  color: whitesmoke;
 		  font-weight: bold;
 		}

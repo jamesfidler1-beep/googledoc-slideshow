@@ -220,10 +220,12 @@
 	
 	
 	function loadSlide(d) {
-		
+		page = $(".page").text()
 	    if (window.name=="Notes") {
 		  type = "1"
 		} else {
+			
+			
 		    type = "0"
 		    tt = "fade"
 			x = $(".slide0").clone()
@@ -232,9 +234,13 @@
 			x.appendTo("body")
 			$(".slide0").addClass(tt+d)   
 			$(".slide0 .scont").html("")
+			if (getSlideOption(page,"Theme") != "") {
+				console.log("Slide theme "+getSlideOption(page,"Theme"));
+				$(".slide0").removeClass().addClass("slide slide0").addClass(getSlideOption(page,"Theme").toLowerCase());
+			}
 		}
 		
-		$(".slide0 .scont").html($(".content").contents().find("html").find('.doc-content > table:eq('+$(".page").text()+') > tbody > tr:eq(1) > td:eq('+type+')').html())
+		$(".slide0 .scont").html($(".content").contents().find("html").find('.doc-content > table:eq('+page+') > tbody > tr:eq(1) > td:eq('+type+')').html())
 		
 		$(".slide0 .scont").html(function(index, oldHtml) {
 			return oldHtml.replace(/&lt;!([^\>]*)&gt;/g, "<span class='tag tag_$1'>#ERR#</span>");
@@ -247,8 +253,8 @@
 		}
 		
 		
-		$(".slide0 .prev").prop("disabled",parseInt($(".page").text())==0)
-		$(".slide0 .next").prop("disabled",parseInt($(".page").text())>$(".content").contents().find("html").find('.doc-content > table').length-2)
+		$(".slide0 .prev").prop("disabled",parseInt(page)==0)
+		$(".slide0 .next").prop("disabled",parseInt(page)>$(".content").contents().find("html").find('.doc-content > table').length-2)
 		if (isLocked()) {
 			pageChannel.postMessage($(".page").text());
 		}
@@ -265,11 +271,11 @@
 			});
 			resize()
 		} else {
-			$(".content").contents().find("html").find('.doc-content > table:eq('+$(".page").text()+') > tbody > tr:eq(1) > td:eq(0) a').each(function( index ) {
+			$(".content").contents().find("html").find('.doc-content > table:eq('+page+') > tbody > tr:eq(1) > td:eq(0) a').each(function( index ) {
 				$(".slide0 .scont").append(createVideoControls($(this).text()))
 			});		
 		}
-		setCookie("page",$(".page").text(),7)
+		setCookie("page",page,7)
 		populateTags()
 		displayClock()
 	};
