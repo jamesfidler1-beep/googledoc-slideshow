@@ -269,7 +269,9 @@
 				$(this).replaceWith(`<video autoplay ><source src='${x}' type='video/mp4'></video>`);
 				videoLoadCheck()
 			});
-			resize()
+			if (getSlideOption(page,"Scale") == "Auto") {
+				resize()
+			}
 		} else {
 			$(".content").contents().find("html").find('.doc-content > table:eq('+page+') > tbody > tr:eq(1) > td:eq(0) a').each(function( index ) {
 				$(".slide0 .scont").append(createVideoControls($(this).text()))
