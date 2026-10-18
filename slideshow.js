@@ -126,11 +126,12 @@
 		return $(".sinfo > span:eq("+page+") > span.slideOptions span:contains('"+optionName+" ')").text().replace(new RegExp('^' + optionName+' *'),  '');
 	}
 	
-	
 	function nextSlidePlease(d) {
-	  if ((parseInt($(".page").text())+d>=0) && (parseInt($(".page").text())+d<=$(".content").contents().find("html").find('.doc-content > table').length-1) && ($('.slide1').length==0)) {
-		$(".page").text(parseInt($(".page").text())+d)
-		loadSlide(d)
+	  if (!animationNext(d)) {
+		  if ((parseInt($(".page").text())+d>=0) && (parseInt($(".page").text())+d<=$(".content").contents().find("html").find('.doc-content > table').length-1) && ($('.slide1').length==0)) {
+			$(".page").text(parseInt($(".page").text())+d)
+			loadSlide(d)
+		  }
 	  }
 	};
 	
