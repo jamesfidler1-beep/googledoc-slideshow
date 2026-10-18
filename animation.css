@@ -1,0 +1,9 @@
+.player.animation thead h2 {
+    background-image: url(animation.svg);
+    background-position: -12px 2px;
+}
+
+.player.animation tbody tr span {
+    color: #fff;
+    font-size : 1.5em;
+}

@@ -20,6 +20,9 @@
 
 .player thead span {
 	color: #fff;
+}
+
+.player thead .playername span {
     padding-left: 30px;
 }
 

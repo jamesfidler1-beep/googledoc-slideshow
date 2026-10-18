@@ -2,6 +2,7 @@
 	const vidChannel = new BroadcastChannel('vid');
 	const audioChannel = new BroadcastChannel('audio');
 	const styleChannel = new BroadcastChannel('style');
+	const animationChannel = new BroadcastChannel('animation');
 	
 	function initialiseSlideShow() {
 		
@@ -36,6 +37,10 @@
 		
 		audioChannel.onmessage = function(e) {
 			audioEvent(e.data)
+		};
+		
+		animationChannel.onmessage = function(e) {
+			animationEvent(e.data)
 		};
 		
 		styleChannel.onmessage = function(e) {
@@ -93,6 +98,10 @@
 	
 	function audioEvent(e) {
 		playerAudioEvent(e)
+	}
+	
+	function animationEvent(e) {
+		animationProcessEvent(e)
 	}
 	
 	function getSlideInfo() {
@@ -257,23 +266,41 @@
 		if (isLocked()) {
 			pageChannel.postMessage($(".page").text());
 		}
-		$(".slide0 .scont").find("thead span:textEquals('Widget - Music Player')").each(function( index ) {
+		$(".slide0 .scont").find("span:textEquals('Widget - Music Player')").each(function( index ) {
 			$(this).text("PLAYER")
 			t = $( this ).parents('table:eq(0)')
 			$(t).replaceWith(createPlayer(t,index));
 		});
+		$(".slide0 .scont").find("span:textEquals('Widget - Animation')").each(function( index ) {
+			t = $( this ).parents('table:eq(0)')
+			$(this).text("ANIMATION")
+			$(this).addClass("playername")
+			createAnimationControls(t)
+		});
 		if (type=="0") {
 			$(".slide0 .scont").find("a").each(function( index ) {
-				x = $(this).text()
-				$(this).replaceWith(`<video autoplay ><source src='${x}' type='video/mp4'></video>`);
-				videoLoadCheck()
+				a = $(this)
+				x = a.text()
+				if (x.endsWith('.mp4')) {
+					$(this).replaceWith(`<video autoplay ><source src='${x}' type='video/mp4'></video>`);
+					videoLoadCheck()
+				} else if (x.endsWith('.svg')) {
+					 console.log("SVG Image found")
+					 $.get("/"+x, function(data) {
+						  console.log("SVG Image loaded")
+						  a.replaceWith($(data).find("svg"));
+					 });
+				}
 			});
 			if (getSlideOption(page,"Scale") == "Auto") {
 				resize()
 			}
 		} else {
 			$(".content").contents().find("html").find('.doc-content > table:eq('+page+') > tbody > tr:eq(1) > td:eq(0) a').each(function( index ) {
-				$(".slide0 .scont").append(createVideoControls($(this).text()))
+				x = $(this).text()
+				if (x.endsWith('.mp4')) {
+					$(".slide0 .scont").append(createVideoControls(x))
+				}
 			});		
 		}
 		setCookie("page",page,7)
