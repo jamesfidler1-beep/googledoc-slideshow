@@ -1,0 +1,140 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	background: #020617;
+	color: #f8fafc;
+	font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+	padding: 24px;
+}
+
+.shell {
+	width: min(1180px, 100%);
+	margin: auto;
+}
+
+.badge {
+	display: inline-block;
+	color: #7dd3fc;
+	background: #0ea5e91a;
+	border: 1px solid #38bdf833;
+	border-radius: 999px;
+	padding: 5px 10px;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	gap: 20px;
+	align-items: end;
+	margin: 14px 0 18px;
+}
+
+h1 {
+	font-size: clamp(28px, 4vw, 42px);
+	margin: 7px 0;
+}
+
+.copy,
+.count {
+	color: #94a3b8;
+}
+
+.copy {
+	margin: 0;
+	max-width: 720px;
+	line-height: 1.5;
+}
+
+.panel {
+	overflow: hidden;
+	background: #0f172acf;
+	border: 1px solid #1e293b;
+	border-radius: 18px;
+}
+
+.toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	padding: 14px;
+	border-bottom: 1px solid #1e293b;
+}
+
+.toolbar input[type=text] {
+	height: 44px;
+	border: 1px solid #334155;
+	border-radius: 10px;
+	background: #020617bf;
+	color: #f8fafc;
+	padding: 0 13px;
+	font-size: 15px;
+}
+
+.toolbar button {
+	height: 44px;
+	border-radius: 10px;
+	padding: 0 17px;
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.add {
+	border: 0;
+	background: #38bdf8;
+	color: #082f49;
+}
+
+.remove {
+	background: #f43f5e1f;
+	border: 1px solid #f43f5e61;
+	color: #fda4af;
+}
+
+.reset {
+	background: transparent;
+	border: 1px solid #334155;
+	color: #cbd5e1;
+}
+
+.stage {
+	position: relative;
+	height: min(65vh, 650px);
+	min-height: 440px;
+	overflow: hidden;
+	background: radial-gradient(circle at center, #0ea5e91c, transparent 58%);
+}
+
+canvas {
+	position: absolute;
+	inset: 0;
+}
+
+.hint {
+	position: absolute;
+	left: 14px;
+	bottom: 12px;
+	color: #64748b;
+	background: #020617b8;
+	border: 1px solid #334155;
+	border-radius: 8px;
+	padding: 7px 9px;
+	font-size: 11px;
+	font-family: ui-monospace, monospace;
+	pointer-events: none;
+}
+
+@media(max-width: 650px) {
+	body {
+		padding: 12px;
+	}
+	.header {
+		align-items: start;
+		flex-direction: column;
+	}
+}
