@@ -19,12 +19,13 @@ function initialiseWordCloud() {
   ctx = canvas.getContext('2d');
   stage = $(".scont")[0]
   wc_resize()
-  frame()
+  addMany({ Root: 500 });
+  wc_frame()
 }
 
 
-//const palette = ["#60a5fa", "#a78bfa", "#34d399", "#f87171", "#fbbf24", "#22d3ee", "#fb7185"];
-const words = ["Apple","Banana","Cod"];
+const palette = ["#60a5fa", "#a78bfa", "#34d399", "#f87171", "#fbbf24", "#22d3ee", "#fb7185"];
+const words = [];
 //const $ = s => document.querySelector(s);
 
 //const canvas = $("#canvas");
@@ -37,22 +38,22 @@ let width = 1;
 let height = 1;
 //let dpr = 1;
 
-//const norm = w => w.trim().toLocaleLowerCase();
-//const display = w => w.trim().replace(/\s+/g, " ");
+const norm = w => w.trim().toLocaleLowerCase();
+const display = w => w.trim().replace(/\s+/g, " ");
 
-/* function hash(t) {
+function hash(t) {
 	let h = 2166136261;
 	for (let i = 0; i < t.length; i++) {
 		h = Math.imul(h ^ t.charCodeAt(i), 16777619);
 	}
 	return h >>> 0;
-} */
+}
 
 function fontSize(n) {
 	return Math.min(160, 9 + 16 * Math.pow(n, .62));
 }
 
-/* function makeWord(text, count = 1) {
+function makeWord(text, count = 1) {
 	const seed = hash(norm(text));
 	const side = seed % 4;
 	const w = 110;
@@ -84,13 +85,13 @@ function fontSize(n) {
 		colour: palette[seed % palette.length],
 		pulse: 1.22
 	};
-} */
+}
 
-/* function sync() {
-	unique.textContent = words.length;
-} */
+function sync() {
+	//unique.textContent = words.length;
+}
 
-/* function add(raw, amount = 1) {
+function add(raw, amount = 1) {
 	const text = display(typeof raw === "string" ? raw : "");
 	if (!text) return;
 
@@ -105,7 +106,7 @@ function fontSize(n) {
 		sync();
 	}
 }
- */
+
 /* function remove(raw, amount = 1) {
 	const key = norm(typeof raw === "string" ? raw : "");
 	const i = words.findIndex(w => w.key === key);
@@ -135,13 +136,13 @@ function fontSize(n) {
 	sync();
 } */
 
-/* function addMany(items) {
+function addMany(items) {
 	if (Array.isArray(items)) {
 		items.forEach(i => typeof i === "string" ? add(i) : add(i.word, i.count));
 	} else {
 		Object.entries(items || {}).forEach(([w, c]) => add(w, c));
 	}
-} */
+}
 
 //window.wordcloud = {
 //	add,
@@ -216,7 +217,7 @@ function resolve() {
 	}
 }
 
-function frame() {
+function wc_frame() {
 	ctx.clearRect(0, 0, width, height);
 	const cx = width / 2;
 	const cy = height / 2;
@@ -253,6 +254,7 @@ function frame() {
 		const b = bounds(w);
 		ctx.save();
 		ctx.translate(w.x, w.y);
+		console.log("wc_frame "+w.x+" "+w.y)
 		ctx.globalAlpha = Math.min(1, w.age / 22);
 		ctx.font = `700 ${b.size}px system-ui`;
 		ctx.textAlign = 'center';
@@ -263,7 +265,7 @@ function frame() {
 		ctx.fillText(w.text, 0, 0);
 		ctx.restore();
 	}
-	requestAnimationFrame(frame);
+	requestAnimationFrame(wc_frame);
 }
 
 /* function parse(fn) {
