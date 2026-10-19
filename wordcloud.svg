@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+ <defs>
+    <!-- Core typography and high-amplitude floating animation styles -->
+    <style>
+      .bg { fill: #000000; }
+      .cloud-silhouette { fill: #ffffff; }
+      
+      .word {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-weight: bold;
+        fill: #000000;
+        text-anchor: middle;
+        dominant-baseline: middle;
+        transform-origin: center;
+      }
+
+      /* High-amplitude translations for a noticeable floating effect inside the cloud */
+      @keyframes float-high-1 {
+        0%, 100% { transform: translateY(0px) scale(1); opacity: 0.9; }
+        50% { transform: translateY(-30px) scale(1.04); opacity: 1; }
+      }
+      
+      @keyframes float-high-2 {
+        0%, 100% { transform: translateY(0px) scale(1); opacity: 0.95; }
+        50% { transform: translateY(-35px) scale(1.06); opacity: 1; }
+      }
+
+      @keyframes float-high-3 {
+        0%, 100% { transform: translateY(0px) scale(1); opacity: 0.85; }
+        50% { transform: translateY(-40px) scale(1.03); opacity: 1; }
+      }
+
+      @keyframes float-high-4 {
+        0%, 100% { transform: translateY(0px) scale(1); opacity: 0.8; }
+        50% { transform: translateY(-25px) scale(1.05); opacity: 0.95; }
+      }
+
+      /* Specific animation properties and sizes for each word */
+      .word-1 { font-size: 80px; animation: float-high-1 7s ease-in-out infinite; animation-delay: -1.2s; }
+      .word-2 { font-size: 68px; animation: float-high-2 6s ease-in-out infinite; animation-delay: -3.5s; }
+      .word-3 { font-size: 60px; animation: float-high-3 8s ease-in-out infinite; animation-delay: -5.0s; }
+      .word-4 { font-size: 52px; animation: float-high-4 6.5s ease-in-out infinite; animation-delay: -2.1s; }
+    </style>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="100%" height="100%" class="bg" />
+
+  <!-- Simple Weather Map Style Cloud Container Backdrop -->
+  <g id="cloud-container">
+    <!-- Redesigned using a classic flat-bottomed weather map symbol geometry -->
+    <path class="cloud-silhouette" d="M 250,380 
+             L 550,380 
+             A 65,65 0 0,0 600,260 
+             A 85,85 0 0,0 480,140 
+             A 100,100 0 0,0 300,160 
+             A 75,75 0 0,0 200,285 
+             A 65,65 0 0,0 250,380 
+             Z" />
+  </g>
+
+  <!-- Floating Black Words arranged neatly inside the cloud boundaries -->
+  <g id="cloud-words">
+    <!-- Word 1: Word (Center Anchor) -->
+    <text x="390" y="280" class="word word-1">Word</text>
+
+    <!-- Word 2: Cloud (Top Right Region) -->
+    <text x="495" y="215" class="word word-2">Cloud</text>
+
+    <!-- Word 3: Sun (Bottom Left Region) -->
+    <text x="300" y="320" class="word word-3">Sun</text>
+
+    <!-- Word 4: Rain (Top Left Region) -->
+    <text x="310" y="210" class="word word-4">Rain</text>
+  </g>
+</svg>

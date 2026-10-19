@@ -44,7 +44,7 @@
 		};
 		
 		styleChannel.onmessage = function(e) {
-			$("body").removeClass().addClass("slides").addClass(e.data);
+			$(".slide").addClass(e.data);
 		};
 		
 		window.onload = displayClock();
@@ -267,11 +267,26 @@
 		if (isLocked()) {
 			pageChannel.postMessage($(".page").text());
 		}
+		
 		$(".slide0 .scont").find("span:textEquals('Widget - Music Player')").each(function( index ) {
 			$(this).text("PLAYER")
 			t = $( this ).parents('table:eq(0)')
 			$(t).replaceWith(createPlayer(t,index));
 		});
+		
+		if (window.name=="Notes") {
+			$(".slide0 .scont").find("span:textEquals('Widget - Word Cloud')").each(function( index ) {
+				$(this).text("WORD CLOUD")
+				t = $( this ).parents('table:eq(0)')
+				createWordcloudControls(t)
+			});
+		} else {
+			$(".slide0 .scont").find("span:textEquals('Widget - Word Cloud')").each(function( index ) {
+				$(this).replaceWith(createWordCloud());
+				initialiseWordCloud();
+			});
+		}
+		
 		$(".slide0 .scont").find("span:textEquals('Widget - Animation')").each(function( index ) {
 			t = $( this ).parents('table:eq(0)')
 			$(this).text("ANIMATION")

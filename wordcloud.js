@@ -1,34 +1,58 @@
+function createWordCloud() {
+return "<canvas class='wordcloud' width='1178' height='650' style='width: 1178px; height: 650px;'></canvas>"
+}
 
-const palette = ["#60a5fa", "#a78bfa", "#34d399", "#f87171", "#fbbf24", "#22d3ee", "#fb7185"];
-const words = [];
-const $ = s => document.querySelector(s);
+function createWordcloudControls(t) {
+	recurse(t,function(x) {x.attr( "style", "" );x.attr("class","");})
+	$(t).addClass("player wordcloud")
+	$(t).prepend("<thead></thead>")
+	$(t).find("tbody tr:eq(0)").prependTo($(t).find("thead"))
+	$(t).find("thead tr td:eq(0)").addClass("playername")
+	$(t).find("tbody tr").removeClass().wrap('<tbody></tbody>')
+	$(t).find("tbody>tbody").appendTo($(t))
+	$(t).find("tbody:eq(0)").remove()
+	$(t).find("tbody").removeClass().addClass("loaded")
+}
 
-const canvas = $("#canvas");
-const stage = $("#stage");
-const ctx = canvas.getContext('2d');
-const input = $("#input");
-const unique = $("#unique");
+function initialiseWordCloud() {
+  canvas = $("canvas.wordcloud")[0];
+  ctx = canvas.getContext('2d');
+  stage = $(".scont")[0]
+  wc_resize()
+  frame()
+}
+
+
+//const palette = ["#60a5fa", "#a78bfa", "#34d399", "#f87171", "#fbbf24", "#22d3ee", "#fb7185"];
+const words = ["Apple","Banana","Cod"];
+//const $ = s => document.querySelector(s);
+
+//const canvas = $("#canvas");
+//const stage = $("#stage");
+//const ctx = canvas.getContext('2d');
+//const input = $("#input");
+//const unique = $("#unique");
 
 let width = 1;
 let height = 1;
-let dpr = 1;
+//let dpr = 1;
 
-const norm = w => w.trim().toLocaleLowerCase();
-const display = w => w.trim().replace(/\s+/g, " ");
+//const norm = w => w.trim().toLocaleLowerCase();
+//const display = w => w.trim().replace(/\s+/g, " ");
 
-function hash(t) {
+/* function hash(t) {
 	let h = 2166136261;
 	for (let i = 0; i < t.length; i++) {
 		h = Math.imul(h ^ t.charCodeAt(i), 16777619);
 	}
 	return h >>> 0;
-}
+} */
 
 function fontSize(n) {
 	return Math.min(160, 9 + 16 * Math.pow(n, .62));
 }
 
-function makeWord(text, count = 1) {
+/* function makeWord(text, count = 1) {
 	const seed = hash(norm(text));
 	const side = seed % 4;
 	const w = 110;
@@ -60,13 +84,13 @@ function makeWord(text, count = 1) {
 		colour: palette[seed % palette.length],
 		pulse: 1.22
 	};
-}
+} */
 
-function sync() {
+/* function sync() {
 	unique.textContent = words.length;
-}
+} */
 
-function add(raw, amount = 1) {
+/* function add(raw, amount = 1) {
 	const text = display(typeof raw === "string" ? raw : "");
 	if (!text) return;
 
@@ -81,8 +105,8 @@ function add(raw, amount = 1) {
 		sync();
 	}
 }
-
-function remove(raw, amount = 1) {
+ */
+/* function remove(raw, amount = 1) {
 	const key = norm(typeof raw === "string" ? raw : "");
 	const i = words.findIndex(w => w.key === key);
 	if (i === -1) return false;
@@ -96,39 +120,39 @@ function remove(raw, amount = 1) {
 		sync();
 	}
 	return true;
-}
+} */
 
-function removeAll(raw) {
+/* function removeAll(raw) {
 	const key = norm(typeof raw === "string" ? raw : "");
 	for (let i = words.length - 1; i >= 0; i--) {
 		if (words[i].key === key) words.splice(i, 1);
 	}
 	sync();
-}
+} */
 
-function reset() {
+/* function reset() {
 	words.length = 0;
 	sync();
-}
+} */
 
-function addMany(items) {
+/* function addMany(items) {
 	if (Array.isArray(items)) {
 		items.forEach(i => typeof i === "string" ? add(i) : add(i.word, i.count));
 	} else {
 		Object.entries(items || {}).forEach(([w, c]) => add(w, c));
 	}
-}
+} */
 
-window.wordcloud = {
-	add,
-	addMany,
-	remove,
-	removeAll,
-	reset,
-	getwords: () => words.map(({ text, count }) => ({ word: text, count }))
-};
+//window.wordcloud = {
+//	add,
+//	addMany,
+//	remove,
+//	removeAll,
+//	reset,
+//	getwords: () => words.map(({ text, count }) => ({ word: text, count }))
+//};
 
-function resize() {
+function wc_resize() {
 	const r = stage.getBoundingClientRect();
 	width = Math.max(320, r.width);
 	height = Math.max(400, r.height);
@@ -141,8 +165,8 @@ function resize() {
 	ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
-new ResizeObserver(resize).observe(stage);
-resize();
+//new ResizeObserver(resize).observe(stage);
+//resize();
 
 function bounds(w) {
 	const size = fontSize(w.count) * w.pulse;
@@ -191,6 +215,7 @@ function resolve() {
 		if (!hit) break;
 	}
 }
+
 function frame() {
 	ctx.clearRect(0, 0, width, height);
 	const cx = width / 2;
@@ -240,10 +265,11 @@ function frame() {
 	}
 	requestAnimationFrame(frame);
 }
-function parse(fn) {
+
+/* function parse(fn) {
 	input.value.split(',').map(s => s.trim()).filter(Boolean).forEach(fn);
 	input.value = '';
-}
+} */
 
 // $('#form').onsubmit = e => {
 // e.preventDefault();
