@@ -11,7 +11,18 @@ function createWordcloudControls(t) {
 	$(t).find("tbody tr").removeClass().wrap('<tbody></tbody>')
 	$(t).find("tbody>tbody").appendTo($(t))
 	$(t).find("tbody:eq(0)").remove()
+	$(t).find("thead tr:eq(0) td:eq(1)").append("<form id='#wordcloudform'><input id='wordcloud-input' placeholder='Type a word, or comma-separated words...' class='text-field'><div class='"+BUTTON+" "+WC_BUTTON+" "+WC_ADD_BUTTON+"' onclick='parse(addMessage)'></div></form>")
+	$(t).find("tbody tr td:first-child").each(function( index ) {
+		$(this).after("<td><div class='"+BUTTON+" "+WC_BUTTON+" "+WC_PLUS_BUTTON+"' onclick='wc_click(wc_plus,"+index+")'></div><div class='"+BUTTON+" "+WC_BUTTON+" "+WC_PLUS10_BUTTON+"' onclick='wc_click(wc_plus10,"+index+")'></div><div class='"+BUTTON+" "+WC_BUTTON+" "+WC_MINUS_BUTTON+"' onclick='wc_click(wc_minus,"+index+")'></div><div class='"+BUTTON+" "+WC_BUTTON+" "+WC_DELETE_BUTTON+"' onclick='wc_click(wc_delete,"+index+")'></div><div class='"+BUTTON+" "+WC_BUTTON+" "+WC_REFRESH_BUTTON+"' onclick='wc_click(wc_refresh,"+index+")'></div></td>")	
+	})
 	$(t).find("tbody").removeClass().addClass("loaded")
+	$('form').on('submit',function(event){
+		parse(addMessage);
+		return false;
+	});
+	$(t).find("tbody").each(function( index ) {
+		addMessage($(this).find("span:eq(0)").text(),$(this).find("td:eq(2) span:eq(0)").text());
+	});
 }
 
 function initialiseWordCloud() {
@@ -19,10 +30,68 @@ function initialiseWordCloud() {
   ctx = canvas.getContext('2d');
   stage = $(".scont")[0]
   wc_resize()
-  addMany({ Root: 500 });
   wc_frame()
 }
 
+function wc_click(f,i) {
+   f($("tbody:eq("+i+")"))
+}
+
+function wc_plus(t) {
+  update_word(t.find("span:eq(0)").text(),1)
+}
+
+function wc_plus10(t) {
+  update_word(t.find("span:eq(0)").text(),10)
+}
+
+function wc_minus(t) {
+  update_word(t.find("span:eq(0)").text(),-1)
+}
+
+function wc_delete(t) {
+  update_word(t.find("span:eq(0)").text(),0)
+}
+
+function update_word(word,n) {
+	addMessage(word,n)
+	$(t).find("tbody").each(function( index ) {
+		if ($(this).find("span:eq(0)").text()==word) {
+			if (n==0) {
+				c=0
+			} else {
+				c = Math.max(0,parseInt($(this).find("span:eq(1)").text())+n)
+			}
+			$(this).find("span:eq(1)").text(c)
+		}
+	});
+}
+
+function addMessage(word,n=1) {
+	wordcloudChannel.postMessage("WORD#"+word+"#"+n);
+	console.log("addMessage "+word+" "+n)
+}
+
+function wordcloudHandleEvent(e) {
+	ee = e.split("#");
+	console.log("wordCloudHandleEvent "+ee)
+	if (ee[0]=="WORD") {
+		if (ee[2]>0) {
+			add(ee[1],ee[2])
+		} else if (ee[2]<0) {
+		    remove(ee[1],-ee[2])
+		} else {
+			removeAll(ee[1])	
+		}
+	}
+}
+const WC_BUTTON = "wordcloud_button"
+const WC_ADD_BUTTON = "wordcloud_add_button"
+const WC_PLUS_BUTTON = "wordcloud_plus_button"
+const WC_PLUS10_BUTTON = "wordcloud_plus10_button"
+const WC_MINUS_BUTTON = "wordcloud_minus_button"
+const WC_DELETE_BUTTON = "wordcloud_delete_button"
+const WC_REFRESH_BUTTON = "wordcloud_refresh_button"
 
 const palette = ["#60a5fa", "#a78bfa", "#34d399", "#f87171", "#fbbf24", "#22d3ee", "#fb7185"];
 const words = [];
@@ -50,7 +119,7 @@ function hash(t) {
 }
 
 function fontSize(n) {
-	return Math.min(160, 9 + 16 * Math.pow(n, .62));
+	return Math.min(360, 9 + 16 * Math.pow(n*5, .62));
 }
 
 function makeWord(text, count = 1) {
@@ -92,22 +161,24 @@ function sync() {
 }
 
 function add(raw, amount = 1) {
+	
 	const text = display(typeof raw === "string" ? raw : "");
 	if (!text) return;
 
 	const n = Math.max(1, Math.floor(Number(amount) || 1));
 	const w = words.find(v => v.key === norm(text));
-
+    
 	if (w) {
 		w.count += n;
 		w.pulse = 1.32;
 	} else {
+		console.log("add new "+raw+" n="+n+" amount="+amount)
 		words.push(makeWord(text, n));
 		sync();
 	}
 }
 
-/* function remove(raw, amount = 1) {
+function remove(raw, amount = 1) {
 	const key = norm(typeof raw === "string" ? raw : "");
 	const i = words.findIndex(w => w.key === key);
 	if (i === -1) return false;
@@ -121,20 +192,20 @@ function add(raw, amount = 1) {
 		sync();
 	}
 	return true;
-} */
+}
 
-/* function removeAll(raw) {
+function removeAll(raw) {
 	const key = norm(typeof raw === "string" ? raw : "");
 	for (let i = words.length - 1; i >= 0; i--) {
 		if (words[i].key === key) words.splice(i, 1);
 	}
 	sync();
-} */
+}
 
-/* function reset() {
+function reset() {
 	words.length = 0;
 	sync();
-} */
+}
 
 function addMany(items) {
 	if (Array.isArray(items)) {
@@ -171,6 +242,7 @@ function wc_resize() {
 
 function bounds(w) {
 	const size = fontSize(w.count) * w.pulse;
+	console.log("bounds w.count="+w.count+" size="+size);
 	ctx.font = `700 ${size}px system-ui`;
 	const textMetrics = ctx.measureText(w.text);
 	return {
@@ -254,7 +326,7 @@ function wc_frame() {
 		const b = bounds(w);
 		ctx.save();
 		ctx.translate(w.x, w.y);
-		console.log("wc_frame "+w.x+" "+w.y)
+		
 		ctx.globalAlpha = Math.min(1, w.age / 22);
 		ctx.font = `700 ${b.size}px system-ui`;
 		ctx.textAlign = 'center';
@@ -268,10 +340,10 @@ function wc_frame() {
 	requestAnimationFrame(wc_frame);
 }
 
-/* function parse(fn) {
-	input.value.split(',').map(s => s.trim()).filter(Boolean).forEach(fn);
-	input.value = '';
-} */
+function parse(fn) {
+	$("#wordcloud-input")[0].value.split(',').map(s => s.trim()).filter(Boolean).forEach(element=>fn(element));
+	$("#wordcloud-input")[0].value = '';
+}
 
 // $('#form').onsubmit = e => {
 // e.preventDefault();
