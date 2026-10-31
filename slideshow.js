@@ -105,20 +105,24 @@
 	}
 	
 	function getSlideInfo() {
-	  $(".sinfo").html($(".content").contents().find("html .doc-content > table").find("tr:eq(0) > td:eq(0) > p > span"))
+	  $(".sinfo table").html($(".content").contents().find("html .doc-content > table").find("tr:eq(0)"))
+	  recurse($(".sinfo table"),function(x) {x.attr( "style", "" );x.attr("class","");})
 	  console.log("Start Date/Time = #"+$(".start").text()+"#")
 	  p = Date.parse($(".start").text())
-	  $(".sinfo span").each(function( index ) {
+	  $(".sinfo tr").each(function( index ) {
 		  $( this ).attr("id",index)
-		  console.log("Slide time = "+new Date(p))
-		  l = parseInt($(this).text())
-		  console.log("Slide length = "+l)
-		  pp = new Date(p)
-		  $(this).append("<span class='start'>"+pp.toISOString().split('T')[0]+"T"+pp.toLocaleTimeString()+"</span>");
-		  p = p + ( l*60*1000)
-		  pp = new Date(p)
-		  $(this).append("<span class='end'>"+pp.toISOString().split('T')[0]+"T"+pp.toLocaleTimeString()+"</span>");
-		  $(this).append("<span class='slideOptions'>"+$(".content").contents().find("html .doc-content > table:eq("+index+") > tbody > tr:eq(0) > td:eq(1)").html()+"</span>");
+		  e = $(this).find("span:contains('Slide Name')").text()
+		  $(this).empty();
+		  $(this).append("<td class='name'>"+e+"</td>");
+		  //console.log("Slide time = "+new Date(p))
+		  //l = parseInt($(this).text())
+		  //console.log("Slide length = "+l)
+		  //pp = new Date(p)
+		  //$(this).append("<span class='start'>"+pp.toISOString().split('T')[0]+"T"+pp.toLocaleTimeString()+"</span>");
+		  //p = p + ( l*60*1000)
+		  //pp = new Date(p)
+		  //$(this).append("<span class='end'>"+pp.toISOString().split('T')[0]+"T"+pp.toLocaleTimeString()+"</span>");
+		  //$(this).append("<span class='slideOptions'>"+$(".content").contents().find("html .doc-content > table:eq("+index+") > tbody > tr:eq(0) > td:eq(1)").html()+"</span>");
       });
 	}
 	
