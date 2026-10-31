@@ -105,29 +105,59 @@
 	}
 	
 	function getSlideInfo() {
-	  $(".sinfo table").html($(".content").contents().find("html .doc-content > table").find("tr:eq(0)"))
+	  $(".sinfo table").html($(".content").contents().find("html .doc-content > table").find("tr:eq(0)").clone())
 	  recurse($(".sinfo table"),function(x) {x.attr( "style", "" );x.attr("class","");})
 	  console.log("Start Date/Time = #"+$(".start").text()+"#")
-	  p = Date.parse($(".start").text())
+	  last_start = Date.parse($(".start").text())
+	  last_end = last_start
 	  $(".sinfo tr").each(function( index ) {
+		  console.log("sinf")
+		  tags = $(this).clone()
 		  $( this ).attr("id",index)
-		  e = $(this).find("span:contains('Slide Name')").text()
 		  $(this).empty();
-		  $(this).append("<td class='name'>"+e+"</td>");
-		  //console.log("Slide time = "+new Date(p))
-		  //l = parseInt($(this).text())
-		  //console.log("Slide length = "+l)
-		  //pp = new Date(p)
-		  //$(this).append("<span class='start'>"+pp.toISOString().split('T')[0]+"T"+pp.toLocaleTimeString()+"</span>");
-		  //p = p + ( l*60*1000)
-		  //pp = new Date(p)
-		  //$(this).append("<span class='end'>"+pp.toISOString().split('T')[0]+"T"+pp.toLocaleTimeString()+"</span>");
-		  //$(this).append("<span class='slideOptions'>"+$(".content").contents().find("html .doc-content > table:eq("+index+") > tbody > tr:eq(0) > td:eq(1)").html()+"</span>");
+		  d = getTagValue(tags,"Slide Duration")
+		  if (d!="") {
+			last_start = last_end  
+			last_start_d = new Date(last_start)
+			if (d.includes(":")) {
+				console.log("d:="+d)
+				e = d.split(':')
+				console.log("e="+e)
+				l = parseInt(e[0])
+				s = parseInt(e[1])
+			} else {				
+				l = parseInt(d)
+				s = 0
+			}
+			last_end = last_start + ( l*60*1000) + (s*1000)
+			last_end_d = new Date(last_end) 
+		  } else {
+			l=0
+			s=0
+		  }
+		  $(this).append("<td class='name'>"+getTagValue(tags,"Slide Name")+"</td>");
+		  $(this).append("<td class='start'>"+last_start_d.toISOString().split('T')[0]+"T"+last_start_d.toLocaleTimeString()+"</td>");
+		  $(this).append("<td class='end'>"+last_end_d.toISOString().split('T')[0]+"T"+last_end_d.toLocaleTimeString()+"</td>");
+		  $(this).append("<td class='duration'>"+d+"</td>");
+		  $(this).append("<td class='disabled'>"+(getTag(tags,"Slide Disabl")=="e")+"</td>");
+		  $(this).append("<td class='transition'>"+getTag(tags,"Transition")+"</td>");
+		  $(this).append("<td class='theme'>"+getTag(tags,"Theme")+"</td>");
+		  $(this).append("<td class='advance'>"+getTag(tags,"Advance")+"</td>");
+		  $(this).append("<td class='scale'>"+getTag(tags,"Scale")+"</td>");
       });
 	}
 	
+	function getTagValue(t,name) {
+		return $(t).find("span:contains('"+name+"')").next().text()
+	}
+	
+	function getTag(t,name) {
+		return $(t).find("span:contains('"+name+"')").text().replace(name,"").trim()
+	}
+	
 	function getSlideOption(page,optionName) {
-		return $(".sinfo > span:eq("+page+") > span.slideOptions span:contains('"+optionName+" ')").text().replace(new RegExp('^' + optionName+' *'),  '');
+		console.log("getSlideOption "+page+" on="+optionName.toLowerCase()+" v="+ $(".sinfo tr:eq("+page+") td."+optionName.toLowerCase()).text())
+		return $(".sinfo tr:eq("+page+") td."+optionName.toLowerCase()).text();
 	}
 	
 	function nextSlidePlease(d) {
