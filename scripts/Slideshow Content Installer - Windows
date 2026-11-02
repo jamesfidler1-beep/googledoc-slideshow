@@ -1,0 +1,202 @@
+Write-Host "Downloading $courseName Course Content...";
+Import-Module PSPlaywright
+Start-Playwright
+Write-Host "Downloading to $scriptDir";
+$destinationFolder = "$scriptDir$courseName"
+New-Item -Path $destinationFolder -ItemType directory -Force
+
+Copy-Item -Path "$scriptDir/GDS/*" -Destination $destinationFolder -Recurse -Force
+
+"$destinationFolder#" > "$($destinationFolder)\gds.txt"
+
+# 3. Launch a specific browser (e.g., Chromium, Firefox, or WebKit)
+
+$playwright = [Microsoft.Playwright.Playwright]::CreateAsync().Result
+Write-Host 'Playwright = '+$playwright;
+$browser = $playwright.Chromium.LaunchAsync([Microsoft.Playwright.BrowserTypeLaunchOptions]@{ Headless = $true }).Result
+Write-Host 'Browser = '+$browser;
+$context = $browser.NewContextAsync().Result
+Write-Host 'Context = '+$context;
+$page = $context.NewPageAsync().Result
+Write-Host 'Page = '+$page;
+
+# Target a functional JavaScript-rich site
+$url = "https://docs.google.com/document/d/e/$slidesId/pub"
+
+if (!(Test-Path $destinationFolder)) { New-Item -ItemType Directory -Path $destinationFolder | Out-Null }
+
+Write-Host "Navigating to $url and executing full JavaScript layout..." -ForegroundColor Cyan
+
+# 2. Open the page and wait for the network activity to go silent
+$page.GotoAsync($url, [Microsoft.Playwright.PageGotoOptions]@{ 
+    WaitUntil = [Microsoft.Playwright.WaitUntilState]::NetworkIdle
+}).Result
+
+# Save the main index.html file cleanly
+$renderedHtml = $page.ContentAsync().Result
+$indexPath = Join-Path $destinationFolder "index.html"
+$renderedHtml | Out-File -FilePath ($indexPath) -Encoding utf8
+(Get-Content -Path $indexPath) -replace '"http[^"]*/css\?([^"]*)"', '"$1.css"' | Set-Content -Path $indexPath
+(Get-Content -Path $indexPath) -replace '"http[^"]*/([^"]*)"', '"$1"' | Set-Content -Path $indexPath
+(Get-Content -Path $indexPath) -replace '\(http[^\)]*/css\?([^\)]*)\)', '($1.css)' | Set-Content -Path $indexPath
+(Get-Content -Path $indexPath) -replace '\(http[^\)]*\/([^\)]*)\)', '($1)' | Set-Content -Path $indexPath
+
+# 3. Pull resource paths using explicitly formatted JS evaluation strings
+Write-Host "Extracting assets securely from the DOM..." -ForegroundColor Cyan
+
+# Pass $null to target the correct .NET method signature
+$images = $page.EvaluateAsync("() => Array.from(document.querySelectorAll('img')).map(img => img.src)", $null).Result
+$scripts = $page.EvaluateAsync("() => Array.from(document.querySelectorAll('script[src]')).map(script => script.src)", $null).Result | ForEach-Object { foreach ($element in $_.EnumerateArray()) {[System.Tuple]::Create($element,$element+".js")}};
+$styles = $page.EvaluateAsync("() => Array.from(document.querySelectorAll('link[rel='stylesheet']')).map(link => link.href)", $null).Result
+
+$a = $page.EvaluateAsync("() => Array.from(document.querySelectorAll('a[href]')).map(a => a.href+'@@'+a.innerText)", $null).Result
+$a = $a | ForEach-Object { foreach ($element in $_.EnumerateArray()) { if ($element -match "@@([^.]*\....)") { $fn = $Matches[1]; if ($element -match "id%3D([^&]*)") {[System.Tuple]::Create("https://drive.google.com/uc?export=download&id=$($Matches[1])","$fn")}}}};
+$a = @("",$a)
+
+$cssImportsJS = @"
+() => {
+    const imports = [];
+    function crawl(sheet) {
+        try {
+            if (!sheet || !sheet.cssRules) return;
+            Array.from(sheet.cssRules).forEach(rule => {
+                // Check if the rule is a CSSImportRule (TYPE 3)
+                if (rule.type === 3 && rule.href) {
+                    imports.push(rule.href);
+                    // Recursively crawl nested imports inside the imported stylesheet
+                    if (rule.styleSheet) crawl(rule.styleSheet);
+                }
+            });
+        } catch (e) {
+            // Catch Cross-Origin (CORS) errors for styles hosted on third-party CDNs
+        }
+    }
+    Array.from(document.styleSheets).forEach(crawl);
+    return imports;
+}
+"@
+$cssImports = $page.EvaluateAsync($cssImportsJS, $null).Result
+$cssImports = $cssImports | ForEach-Object { foreach ($element in $_.EnumerateArray()) {if ($element -match "css\?(.*)") {[System.Tuple]::Create($element.GetString(),$Matches[1]+".css")}}};
+$cssImports = @("",$cssImports)
+Write-Host "CSS = $cssImports $($cssImports.GetType())" -ForegroundColor Cyan
+Write-Host "Images = $images $($images.GetType())" -ForegroundColor Cyan
+Write-Host "Anchors = $a $($a.GetType())" -ForegroundColor Cyan
+
+# 4. Safely extract strings out of the System.Text.Json.JsonElement array objects
+$allResources = @($images; $scripts; $styles;$a;$cssImports) | ForEach-Object {
+    if ($_) {
+		if ($_ -is [array]) {
+			$aa = $_
+		} elseif ($_.ValueKind -eq "Array") {
+			$aa = $_.EnumerateArray()
+		} else {
+			Write-Host "Not Array $($_.GetType())  $($_.ValueKind) $_" -ForegroundColor Cyan
+			$aa = @($_)
+		}
+		Write-Host "Array $($aa.GetType()) $($aa.ValueKind)" -ForegroundColor Cyan
+        # Loop through elements inside the JSON array and pull their raw string text
+        foreach ($item in $aa) {
+			if ($item.GetType().Name -match '^(Value)?Tuple`') {
+				Write-Host "Item Tuple $i" -ForegroundColor Cyan
+				$i = $item
+			} else {
+				Write-Host "Item type $item $($item.GetType())" -ForegroundColor Cyan
+				$i = [System.Tuple]::Create($item.GetString(),$item.GetString())
+			}
+			
+			Write-Host "Item $i $($i.GetType())" -ForegroundColor Cyan
+            $i
+        }
+		
+	}
+} | Where-Object { $_ -and $_.Item1.StartsWith("http") } | Select-Object -Unique
+
+Write-Host "Discovered $($allResources.Count) total assets processed by Javascript. $($allResources)" -ForegroundColor Green
+
+# 5. Download and write the bytes onto your hard drive
+$webClient = New-Object System.Net.WebClient
+$webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+
+foreach ($asset in $allResources) {
+    try {
+        $uri = [System.Uri]$asset.Item1
+		Write-Host "URL $uri" -ForegroundColor Cyan
+		$fileName = $asset.Item2
+		if ($fileName.StartsWith("http")) {
+		    $fileName = [System.IO.Path]::GetFileName(([System.Uri]$filename).AbsolutePath)
+		}
+		Write-Host "Filename $filename $($filename.GetType())" -ForegroundColor Cyan
+        
+        # Strip query strings or trailing asset hashes (e.g., ?v=1.2)
+        if ($fileName.Contains("?")) { $fileName = $fileName.Split("?")[0] }
+        if ([string]::IsNullOrEmpty($fileName)) { continue }
+
+        # Clean forbidden OS file name characters
+        $safeFileName = $fileName -replace '[\\/:*?"<>|]', '_'
+        $localPath = Join-Path $destinationFolder $safeFileName
+
+		 try {
+			 if ($uri -match 'https://drive.google.com/uc\?export=download&id=(.*)') {
+				$metaFileName = $filename + ".meta"
+				$metaPath = Join-Path $destinationFolder $metaFileName
+				$metaUrl = "https://www.googleapis.com/drive/v3/files/$($Matches[1])?fields=md5Checksum,webViewLink,webContentLink,name,mimeType&key=AIzaSyBypJ-EjvJYfw6omCtzDbUzmE-H_-gFIVo"
+				Write-Host "MetaURL $metaUrl" -ForegroundColor Green
+				if (-not(Test-Path -Path $localPath -PathType Leaf)) {
+					$oldMeta = "Absent"
+				} else {
+					$oldMeta = Get-Content -Path $metaPath -Raw -ErrorAction Ignore
+				}
+				$webClient.DownloadFile($metaUrl, $metaPath)
+				$newMeta = Get-Content -Path $metaPath -Raw -ErrorAction Ignore
+				Write-Host "Meta: #$oldMeta#$newMeta#" -ForegroundColor Green
+				if ($oldMeta -ne $newMeta) {
+					Write-Host "MD5 updated - Writing: $localPath" -ForegroundColor Green
+					$webClient.DownloadFile($uri.AbsoluteUri, $localPath)
+				} else {
+					Write-Host "MD5 not modified for $localPath" -ForegroundColor Gray
+				}
+				
+			 } else {
+				Write-Host "Writing: $localPath" -ForegroundColor Green
+				$webClient.DownloadFile($uri.AbsoluteUri, $localPath)
+				Write-Host "Resource $localPath downloaded"
+			 }
+			 
+			 if ($localPath -match 'css$') {
+					Select-String -Path $localPath -Pattern "url\(([^\)]*)\)" -AllMatches | ForEach-Object {
+						foreach ($Match in $_.Matches) {
+							$cssFile = [System.Uri]$Match.Groups[1].Value
+							Write-Host "Found match $cssFile"
+							$cssFileName = [System.IO.Path]::GetFileName(($cssFile).AbsolutePath)
+							if ($cssFileName.Contains("?")) { $cssFileName = $cssFileName.Split("?")[0] }
+							if ([string]::IsNullOrEmpty($cssFileName)) { continue }
+							$safeCssFileName = $cssFileName -replace '[\\/:*?"<>|]', '_'
+							$cssLocalPath = Join-Path $destinationFolder $safeCssFileName
+							if (-not(Test-Path -Path $cssLocalPath -PathType Leaf)) {
+								$webClient.DownloadFile($cssFile.AbsoluteUri, $cssLocalPath)
+							}
+						}
+					}					 
+				 (Get-Content -Path $localPath) -replace '\(http[^\)]*/([^\)]*)\)', '($1)' | Set-Content -Path $localPath
+			} elseif ($localPath -match '([^.]*).zip$') {
+				Write-Host "ZIP $($Matches[1])"
+				Expand-Archive -Force $localPath -DestinationPath $destinationFolder
+				Get-ChildItem -Path $Matches[1] -Recurse | Move-Item -Force -Destination $destinationFolder
+				Remove-Item -Path $Matches[1]
+			}
+			
+		 }
+		 catch {
+			 throw $_.Exception.Message
+		 }
+
+
+    }
+    catch {
+        Write-Host "Skipped or tracking script blocked: $assetUrl" -ForegroundColor Yellow
+    }
+}
+
+# 6. Terminate the browser process safely
+$browser.CloseAsync().Result
+Write-Host "`nAll resources successfully written to: $destinationFolder" -ForegroundColor Green

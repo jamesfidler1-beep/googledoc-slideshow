@@ -1,0 +1,14 @@
+Write-Host "Downloading GoogleDoc Slideshow code to $scriptDir...";
+Install-Module -Name 'PSPlaywright' -Scope CurrentUser
+Install-Playwright
+$slideshowCodeTemp = New-TemporaryFile | %{ rm $_; mkdir $_ }
+Write-Host "temp = $slideshowCodeTemp";
+Invoke-WebRequest -Uri "https://github.com/jamesfidler1-beep/googledoc-slideshow/archive/refs/heads/main.zip" -OutFile "$slideshowCodeTemp\gds.zip"
+Expand-Archive -Force "$slideshowCodeTemp\gds.zip" -DestinationPath $slideshowCodeTemp
+New-Item -ItemType Directory -Path "$scriptDir\GDS" -Force
+Get-ChildItem -Path "$slideshowCodeTemp/googledoc-slideshow-main" -Recurse -File | ForEach-Object {
+    New-Item -Path "$scriptDir\GDS" -Name "$($_.Name).meta" -ItemType File -Value "googledoc-slideshow-main" -Force
+}
+Get-ChildItem -Path "$slideshowCodeTemp/googledoc-slideshow-main" -Recurse | Move-Item -Force -Destination "$scriptDir\GDS"
+Remove-Item -Recurse -Path $slideshowCodeTemp
+Write-Host "GoogleDoc Slideshow Installation Complete";
