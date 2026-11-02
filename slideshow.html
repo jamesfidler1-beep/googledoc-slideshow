@@ -22,7 +22,7 @@
 	<div class="topbar">
 		<div class="page">0</div>
 		<div class="start"></div>
-		<select class="style" id="style" onchange="setStyle();">
+		<select class="style" id="style" onchange="slideshow.setStyle();">
 			<option value="simple">Simple</option>
 			<option value="fancy">Fancy</option>
 			<option value="pink">Pink</option>
@@ -33,12 +33,15 @@
 		<div class="sinfo"><table></table></div>
 	</div>
 	<div class="slide slide0"><div class="scont">Getting Content...</div></div>
-	<div class="nav"><button class="button prev" onclick="nextSlidePlease(-1)"/><button class="lock locked" onclick="toggleLock()"/><button class="button next" onclick="nextSlidePlease(1)"/></div>
+	<div class="nav"><button class="button prev" onclick="slideshow.nextSlidePlease(-1)"/><button class="lock locked" onclick="slideshow.toggleLock()"/><button class="button next" onclick="slideshow.nextSlidePlease(1)"/></div>
 
   <script>
 	$(document).ready(function() {
 		$('.content').on("load", function() {
-			initialiseSlideShow()
+		    utils.tryModule("Player",function() {player.init();});
+			utils.tryModule("Animation",function() {animation.init();});
+			utils.tryModule("WordCloud",function() {wordcloud.init();});
+			utils.tryModule("Slideshow",function() {slideshow.init();});
 		});
 	});
   </script>
